@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Buddy",
   description: "Your Finance Assistant",
   icons: {
-    icon: "/buddy.jpg",
+    icon: '/buddy.ico',
   },
 };
 
