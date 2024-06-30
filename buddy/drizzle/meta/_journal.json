@@ -8,6 +8,13 @@
       "when": 1719717422200,
       "tag": "0000_equal_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1719720744488,
+      "tag": "0001_kind_the_fallen",
+      "breakpoints": true
     }
   ]
 }
