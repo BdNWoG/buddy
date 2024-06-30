@@ -2,9 +2,10 @@ import { Hono } from 'hono'
 
 import { db } from '@/db/drizzle';
 import { accounts } from '@/db/schema';
+import { clerkMiddleware } from '@hono/clerk-auth';
 
 const app = new Hono()
-    .get('/', async (c) => {
+    .get('/', clerkMiddleware(), async (c) => {
         const data = await db
             .select({
                 id: accounts.id,
