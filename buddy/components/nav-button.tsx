@@ -1,8 +1,6 @@
 import Link from "next/link"
 import { Button } from "./ui/button"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
-import { useMedia } from "react-use"
 
 type Props = {
     href: string
