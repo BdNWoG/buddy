@@ -15,6 +15,13 @@
       "when": 1719720744488,
       "tag": "0001_kind_the_fallen",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1719788154324,
+      "tag": "0002_skinny_hiroim",
+      "breakpoints": true
     }
   ]
 }
