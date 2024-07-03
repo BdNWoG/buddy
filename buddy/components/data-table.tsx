@@ -1,28 +1,47 @@
 "use client"
 
-import { ColumnDef, SortingState, flexRender, getCoreRowModel, useReactTable, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table"
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, useReactTable, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import * as React from "react"
+import { Input } from "./ui/input"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    filterKey: string
 }
 
 export function DataTable<TData, TValue>({
-    columns,data
+    columns, data, filterKey 
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+        []
+    )
+    const [rowSelection, setRowSelection] = React.useState({})
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(), 
+        onColumnFiltersChange: setColumnFilters,
+        getFilteredRowModel: getFilteredRowModel(),
+        onRowSelectionChange: setRowSelection,
+        state: { sorting, columnFilters, rowSelection },
     })
 
     return (
         <div>
+            <div className="flex items-center py-4">
+                <Input
+                placeholder={`Filter ${filterKey}...`} className="max-w-sm"
+                value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
+                onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)} />
+            </div>
             <div className="rounded-md border">
             <Table>
                 <TableHeader>
@@ -68,6 +87,10 @@ export function DataTable<TData, TValue>({
             </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                </div>
                 <Button variant="outline" size="sm" onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}>
                 Previous
