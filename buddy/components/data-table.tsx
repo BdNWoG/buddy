@@ -45,7 +45,11 @@ export function DataTable<TData, TValue>({
                 value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
                 onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)} />
                 {table.getFilteredSelectedRowModel().rows.length > 0 && (
-                    <Button size="sm" variant="outline" className="ml-auto font-normal text-xs" disabled={disabled} onClick={() => onDelete(table.getFilteredSelectedRowModel().rows)}>
+                    <Button size="sm" variant="outline" className="ml-auto font-normal text-xs" 
+                    disabled={disabled} onClick={() => {
+                        onDelete(table.getFilteredSelectedRowModel().rows)
+                        table.resetRowSelection();
+                    }}>
                         <Trash className="size-4 mr-2" />
                         Delete ({table.getFilteredSelectedRowModel().rows.length})
                     </Button>
