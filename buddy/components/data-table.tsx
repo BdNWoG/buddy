@@ -1,19 +1,22 @@
 "use client"
 
-import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, useReactTable, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table"
+import { ColumnDef, ColumnFiltersState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, useReactTable, getSortedRowModel, getPaginationRowModel, Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import * as React from "react"
 import { Input } from "./ui/input"
+import { Trash } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     filterKey: string
+    onDelete: (rows: Row<TData>[]) => void
+    disabled?: boolean
 }
 
 export function DataTable<TData, TValue>({
-    columns, data, filterKey 
+    columns, data, filterKey, onDelete, disabled
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -41,6 +44,12 @@ export function DataTable<TData, TValue>({
                 placeholder={`Filter ${filterKey}...`} className="max-w-sm"
                 value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
                 onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)} />
+                {table.getFilteredSelectedRowModel().rows.length > 0 && (
+                    <Button size="sm" variant="outline" className="ml-auto font-normal text-xs" disabled={disabled} onClick={() => onDelete(table.getFilteredSelectedRowModel().rows)}>
+                        <Trash className="size-4 mr-2" />
+                        Delete ({table.getFilteredSelectedRowModel().rows.length})
+                    </Button>
+                )}
             </div>
             <div className="rounded-md border">
             <Table>
