@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import * as React from "react"
 import { Input } from "./ui/input"
 import { Trash } from "lucide-react"
+import { useConfirm } from "@/hooks/use-confirm"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -18,6 +19,11 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
     columns, data, filterKey, onDelete, disabled
 }: DataTableProps<TData, TValue>) {
+    const [ConfirmDialog, confirm] = useConfirm(
+        "Delete Confirmation",
+        "Are you sure you want to delete the selected rows?"
+    )
+
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
         []
@@ -39,6 +45,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
+            <ConfirmDialog />
             <div className="flex items-center py-4">
                 <Input
                 placeholder={`Filter ${filterKey}...`} className="max-w-sm"
@@ -46,9 +53,13 @@ export function DataTable<TData, TValue>({
                 onChange={(event) => table.getColumn(filterKey)?.setFilterValue(event.target.value)} />
                 {table.getFilteredSelectedRowModel().rows.length > 0 && (
                     <Button size="sm" variant="outline" className="ml-auto font-normal text-xs" 
-                    disabled={disabled} onClick={() => {
-                        onDelete(table.getFilteredSelectedRowModel().rows)
-                        table.resetRowSelection();
+                    disabled={disabled} onClick={async () => {
+                        const ok = await confirm();
+
+                        if (ok) {
+                            onDelete(table.getFilteredSelectedRowModel().rows)
+                            table.resetRowSelection(); 
+                        }
                     }}>
                         <Trash className="size-4 mr-2" />
                         Delete ({table.getFilteredSelectedRowModel().rows.length})
