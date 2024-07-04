@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
 import { Checkbox  } from "@/components/ui/checkbox"
+import { Actions } from "./actions"
 
 export type ResponseType = InferResponseType<typeof client.api.accounts.$get, 200>["data"][0]
 
@@ -43,4 +44,8 @@ export const columns: ColumnDef<ResponseType>[] = [
             )
         },           
     },
+    {
+        id: "actions", 
+        cell: ({ row }) => <Actions id={row.original.id} />
+    }
 ]
