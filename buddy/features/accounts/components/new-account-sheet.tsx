@@ -30,7 +30,7 @@ export const NewAccountSheet = () => {
                         New Account
                     </SheetTitle>
                     <SheetDescription>
-                        Create a new account to track your transcactions.
+                        Create a new account to track your transactions.
                     </SheetDescription>
                 </SheetHeader>
                 <AccountForm onSubmit={onSubmit} disabled={mutation.isPending} defaultValue={{ name: "" }}/>
