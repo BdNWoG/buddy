@@ -22,6 +22,13 @@
       "when": 1719788154324,
       "tag": "0002_skinny_hiroim",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1720222342777,
+      "tag": "0003_supreme_silver_samurai",
+      "breakpoints": true
     }
   ]
 }
