@@ -16,6 +16,8 @@ type FormValues = z.infer<typeof formSchema>;
 export const EditAccountSheet = () => {
     const { isOpen, onClose, id } = useOpenAccount();
 
+    const [ConfirmDialog, confirm] = useConfirm("Delete Transaction", "Are you sure you want to delete this transaction?");
+
     const accountsQuery = useGetAccount(id);
     const editMutation = useEditAccount(id);
     const deleteMutation = useDeleteAccount(id);
@@ -32,6 +34,18 @@ export const EditAccountSheet = () => {
         });
     }
 
+    const onDelete = async () => {
+        const ok = await confirm();
+
+        if (ok) {
+            deleteMutation.mutate(undefined, {
+                onSuccess: () => {
+                    onClose();
+                },
+            });
+        }
+    }
+
     const defaultValues = accountsQuery.data ? {
         name: accountsQuery.data.name
     } : {
@@ -39,7 +53,9 @@ export const EditAccountSheet = () => {
     }
 
     return (
-        <Sheet open={isOpen} onOpenChange={onClose}>
+        <>
+            <ConfirmDialog />
+            <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent className="space-y-4">
                 <SheetHeader>
                     <SheetTitle>
@@ -55,9 +71,10 @@ export const EditAccountSheet = () => {
                     </div> 
                 ) : (
                     <AccountForm id={id} onSubmit={onSubmit} disabled={isPending} 
-                    defaultValue={defaultValues} onDelete={() => deleteMutation.mutate()} />
+                    defaultValue={defaultValues} onDelete={onDelete} />
                 )}
             </SheetContent>
         </Sheet>
+        </>
     );
 }
