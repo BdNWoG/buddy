@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 
 import { db } from '@/db/drizzle';
-import { accounts, insertAccountSchema } from '@/db/schema';
+import { categories, insertCategorySchema } from '@/db/schema';
 import { createId } from '@paralleldrive/cuid2';
 import { zValidator } from '@hono/zod-validator';
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
@@ -18,11 +18,11 @@ const app = new Hono()
 
         const data = await db
             .select({
-                id: accounts.id,
-                name: accounts.name,
+                id: categories.id,
+                name: categories.name,
             })
-            .from(accounts)
-            .where(eq(accounts.userId, auth?.userId));
+            .from(categories)
+            .where(eq(categories.userId, auth?.userId));
 
         return c.json({ data });
     })
@@ -40,19 +40,19 @@ const app = new Hono()
 
         const [data] = await db
             .select({
-                id: accounts.id,
-                name: accounts.name,
+                id: categories.id,
+                name: categories.name,
             })
-            .from(accounts)
-            .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)));
+            .from(categories)
+            .where(and(eq(categories.id, id), eq(categories.userId, auth.userId)));
         
         if (!data) {
-            return c.json({ error: 'Account not found' }, 404);
+            return c.json({ error: 'Category not found' }, 404);
         }
 
         return c.json({ data });
     })
-    .post('/', clerkMiddleware(), zValidator("json", insertAccountSchema.pick({
+    .post('/', clerkMiddleware(), zValidator("json", insertCategorySchema.pick({
         name: true, 
     })), async (c) => {
         const auth = getAuth(c);
@@ -62,7 +62,7 @@ const app = new Hono()
             return c.json({ error: 'Unauthorized' }, 401);
         }
 
-        const [data] = await db.insert(accounts).values({
+        const [data] = await db.insert(categories).values({
             id: createId(),
             userId: auth.userId,
             ...values,
@@ -79,19 +79,19 @@ const app = new Hono()
         }
 
         const data = await db
-        .delete(accounts)
+        .delete(categories)
         .where(
             and(
-                eq(accounts.userId, auth.userId),
-                inArray(accounts.id, values.ids)
+                eq(categories.userId, auth.userId),
+                inArray(categories.id, values.ids)
             )
         )
-        .returning({ id: accounts.id });
+        .returning({ id: categories.id });
 
         return c.json({ data });
     })
     .patch('/:id', clerkMiddleware(), zValidator("param", z.object({ id: z.string().optional() })), 
-    zValidator("json", insertAccountSchema.pick({ name: true })), async (c) => {
+    zValidator("json", insertCategorySchema.pick({ name: true })), async (c) => {
         const auth = getAuth(c);
         const { id } = c.req.valid("param");
         const values = c.req.valid("json");
@@ -104,8 +104,8 @@ const app = new Hono()
             return c.json({ error: 'Missing ID' }, 400);
         }
 
-        const [data] = await db.update(accounts).set(values)
-        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId))).returning();
+        const [data] = await db.update(categories).set(values)
+        .where(and(eq(categories.id, id), eq(categories.userId, auth.userId))).returning();
 
         if (!data) {
             return c.json({ error: 'Account not found' }, 404);
@@ -125,8 +125,8 @@ const app = new Hono()
             return c.json({ error: 'Missing ID' }, 400);
         }
 
-        const [data] = await db.delete(accounts)
-        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId))).returning({ id: accounts.id });
+        const [data] = await db.delete(categories)
+        .where(and(eq(categories.id, id), eq(categories.userId, auth.userId))).returning({ id: categories.id });
 
         if (!data) {
             return c.json({ error: 'Account not found' }, 404);
