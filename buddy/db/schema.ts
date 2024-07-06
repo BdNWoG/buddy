@@ -1,5 +1,6 @@
-import { pgTable, text, integer } from "drizzle-orm/pg-core"
+import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core"
 import { createInsertSchema } from "drizzle-zod"
+import { relations } from "drizzle-orm"
 
 export const accounts = pgTable("accounts", {
     id: text("id").primaryKey(),
@@ -7,6 +8,8 @@ export const accounts = pgTable("accounts", {
     name: text("name").notNull(),
     userId: text("user_id").notNull(),
 })
+
+export const accountsRelations
 
 export const insertAccountSchema = createInsertSchema(accounts)
 
@@ -22,10 +25,13 @@ export const insertCategorySchema = createInsertSchema(categories)
 export const transactions = pgTable("transactions", {
     id: text("id").primaryKey(),
     amount: integer("amount").notNull(),
-    accountId: text("account_id").notNull(),
-    categoryId: text("category_id").notNull(),
-    date: text("date").notNull(),
-    description: text("description").notNull(),
-    merchant: text("merchant").notNull(),
-    userId: text("user_id").notNull(),
+    payee: text("payee").notNull(), 
+    notes: text("notes"),
+    date: timestamp("date", { mode: "date"}).notNull(),
+    accountId: text("account_id").references(() => accounts.id, {
+        onDelete: "cascade",
+    }).notNull(),
+    categoryId: text("category_id").references(() => categories.id, {
+        onDelete: "set null",
+    }),
 })
