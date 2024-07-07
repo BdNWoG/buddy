@@ -10,8 +10,23 @@ import { DataTable } from "../../../components/data-table"
 import { useGetTransactions } from "@/features/transactions/api/use-get-transactions"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useBulkDeleteTransactions } from "@/features/transactions/api/use-bulk-delete-transactions"
+import { useState } from "react"
+import { UploadButton } from "./upload-button"
+
+enum VARIANTS {
+    LIST = "LIST", 
+    IMPORT = "IMPORT",
+}
+
+const INITIAL_IMPORT_RESULTS = {
+    data: [],
+    errors: [],
+    meta: {}
+}
 
 const TransactionsPage = () => {
+    const [variant, setVariant] = useState<VARIANTS>(VARIANTS.LIST);
+
     const newTransaction = useNewTransaction();
     const deleteTransactions = useBulkDeleteTransactions();
     const transactionsQuery = useGetTransactions();
@@ -36,6 +51,16 @@ const TransactionsPage = () => {
         )
     }
 
+    if (variant === VARIANTS.IMPORT) {
+        return (
+            <>
+                <div>
+                    Import Screen
+                </div>
+            </>
+        )
+    }
+
     return (
         <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
             <Card className="border-none drop-shadow-sm">
@@ -43,13 +68,16 @@ const TransactionsPage = () => {
                     <CardTitle className="text-xl line-clamp-1">
                         Transaction History
                     </CardTitle>
-                    <Button onClick={newTransaction.onOpen} size="sm">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add New
-                    </Button>
+                    <div className="flex gap-x-2 items-center">
+                        <Button onClick={newTransaction.onOpen} size="sm">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add New
+                        </Button>
+                        <UploadButton onUpload={() => {}} />
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <DataTable columns={columns} data={transactions} filterKey="name" disabled={isDisabled} 
+                    <DataTable columns={columns} data={transactions} filterKey="payee" disabled={isDisabled} 
                     onDelete={(row) => {
                         const ids = row.map((r) => r.original.id);
                         deleteTransactions.mutate({ ids });
