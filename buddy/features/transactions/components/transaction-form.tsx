@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { insertTransactionSchema } from "@/db/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select } from "@/components/select";
 
 const formSchema = z.object({
     date: z.coerce.date(),
@@ -61,7 +62,9 @@ export const TransactionForm = ({
                                 Account
                             </FormLabel>
                             <FormControl>
-                                <Input {...field} disabled={disabled} placeholder="e.g. Cash, Bank, ..."/>
+                                <Select options={accountOptions} placeholder="Select an account" 
+                                onCreate={onCreateAccount} value={field.value} onChange={field.onChange}
+                                disabled={disabled} />
                             </FormControl>
                         </FormItem>
                     )}
