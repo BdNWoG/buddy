@@ -8,20 +8,34 @@ import { Button } from "@/components/ui/button";
 import { insertTransactionSchema } from "@/db/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-const formSchema = insertTransactionSchema.omit({ id: true });
+const formSchema = z.object({
+    date: z.coerce.date(),
+    accountId: z.string(),
+    categoryId: z.string().nullable().optional(),
+    payee: z.string(),
+    amount: z.string(),
+    notes: z.string().nullable().optional(),
+})
+
+const apiSchema = insertTransactionSchema.omit({ id: true})
 
 type FormValues = z.infer<typeof formSchema>;
+type ApiFormValues = z.input<typeof apiSchema>
 
 type Props = {
     id?: string;
     defaultValue?: FormValues;
-    onSubmit: (values: FormValues) => void;
+    onSubmit: (values: ApiFormValues) => void;
     onDelete?: () => void;
     disabled?: boolean;
+    accountOptions: {label: string, value: string}[];
+    categoryOptions: {label: string, value: string}[];
+    onCreateAccount: (name: string) => void;
+    onCreateCategory: (name: string) => void;
 };
 
 export const TransactionForm = ({ 
-    id, defaultValue, onSubmit, onDelete, disabled 
+    id, defaultValue, onSubmit, onDelete, disabled, accountOptions, categoryOptions, onCreateAccount, onCreateCategory
 }: Props) => {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),

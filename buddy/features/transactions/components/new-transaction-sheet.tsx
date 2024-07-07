@@ -4,6 +4,11 @@ import { TransactionForm } from "./transaction-form";
 import { insertTransactionSchema } from "@/db/schema";
 import { z } from "zod";
 import { useCreateTransaction } from "../api/use-create-transaction";
+import { useCreateCategory } from "@/features/categories/api/use-create-category";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { useCreateAccount } from "@/features/accounts/api/use-create-account";
+import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
+import { Loader2 } from "lucide-react";
 
 const formSchema = insertTransactionSchema.omit({ id: true });
 
@@ -12,10 +17,23 @@ type FormValues = z.infer<typeof formSchema>;
 export const NewTransactionSheet = () => {
     const { isOpen, onClose } = useNewTransaction();
 
-    const mutation = useCreateTransaction();
+    const createMutation = useCreateTransaction();
 
+    const categoryQuery = useGetCategories();
+    const categoryMutation = useCreateCategory();
+    const onCreateCategory = (name: string) => categoryMutation.mutate({ name })
+    const categoryOptions = (categoryQuery.data ?? []).map(category => ({ value: category.id, label: category.name })); 
+
+    const accountQuery = useGetAccounts();
+    const accountMutation = useCreateAccount();
+    const onCreateAccount = (name: string) => accountMutation.mutate({ name })
+    const accountOptions = (accountQuery.data ?? []).map(account => ({ value: account.id, label: account.name })); 
+
+    const isPending = createMutation.isPending || categoryMutation.isPending || accountMutation.isPending;
+
+    const isLoading = categoryQuery.isLoading || accountQuery.isLoading; 
     const onSubmit = (values: FormValues) => {
-        mutation.mutate(values, {
+        createMutation.mutate(values, {
             onSuccess: () => {
                 onClose();
             },
@@ -33,7 +51,16 @@ export const NewTransactionSheet = () => {
                         Create a new transaction to track your transactions.
                     </SheetDescription>
                 </SheetHeader>
-                <TransactionForm onSubmit={onSubmit} disabled={mutation.isPending} defaultValue={{ name: "" }}/>
+                {isLoading ? (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    </div>
+                ) : (
+                    <TransactionForm onSubmit={onSubmit} disabled={isPending} categoryOptions={categoryOptions} 
+                    onCreateCategory={onCreateCategory} onCreateAccount={onCreateAccount} 
+                    accountOptions={accountOptions} defaultValue={{ name: "" }}/>
+                )}
+                
             </SheetContent>
         </Sheet>
     );
