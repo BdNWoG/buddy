@@ -5,10 +5,10 @@ import { Trash } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { insertAccountSchema } from "@/db/schema";
+import { insertTransactionSchema } from "@/db/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-const formSchema = insertAccountSchema.pick({ name: true });
+const formSchema = insertTransactionSchema.omit({ id: true });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -20,7 +20,7 @@ type Props = {
     disabled?: boolean;
 };
 
-export const AccountForm = ({ 
+export const TransactionForm = ({ 
     id, defaultValue, onSubmit, onDelete, disabled 
 }: Props) => {
     const form = useForm<FormValues>({
@@ -52,11 +52,11 @@ export const AccountForm = ({
                     )}
                 />
                 <Button className="w-full" disabled={disabled}>
-                    {id ? "Save Changes" : "Create Account"}
+                    {id ? "Save Changes" : "Create Transaction"}
                 </Button>
                 {!!id && (<Button type="button" disabled={disabled} onClick={handleDelete} className="w-full" variant="outline">
                     <Trash className="mr-2 h-4 w-4" />
-                    Delete Account
+                    Delete Transaction
                 </Button>)}
             </form>
         </Form>

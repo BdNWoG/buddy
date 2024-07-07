@@ -1,30 +1,30 @@
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetHeader } from "@/components/ui/sheet";
-import { AccountForm } from "./account-form";
-import { insertAccountSchema } from "@/db/schema";
+import { TransactionForm } from "./transaction-form";
+import { insertTransactionSchema } from "@/db/schema";
 import { z } from "zod";
-import { useOpenAccount } from "../hooks/use-open-account";
-import { useGetAccount } from "../api/use-get-account";
+import { useOpenTransaction } from "../hooks/use-open-transaction";
+import { useGetTransaction } from "../api/use-get-transaction";
 import { Loader2 } from "lucide-react";
-import { useEditAccount } from "../api/use-edit-account";
-import { useDeleteAccount } from "../api/use-delete-account";
+import { useEditTransaction } from "../api/use-edit-transction";
+import { useDeleteTransaction } from "../api/use-delete-transaction";
 import { useConfirm } from "@/hooks/use-confirm";
 
-const formSchema = insertAccountSchema.pick({ name: true });
+const formSchema = insertTransactionSchema.omit({ id: true });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const EditAccountSheet = () => {
-    const { isOpen, onClose, id } = useOpenAccount();
+export const EditTransactionSheet = () => {
+    const { isOpen, onClose, id } = useOpenTransaction();
 
-    const [ConfirmDialog, confirm] = useConfirm("Delete Account", "Are you sure you want to delete this account?");
+    const [ConfirmDialog, confirm] = useConfirm("Delete Transaction", "Are you sure you want to delete this transaction?");
 
-    const accountQuery = useGetAccount(id);
-    const editMutation = useEditAccount(id);
-    const deleteMutation = useDeleteAccount(id);
+    const transactionQuery = useGetTransaction(id);
+    const editMutation = useEditTransaction(id);
+    const deleteMutation = useDeleteTransaction(id);
 
     const isPending = editMutation.isPending || deleteMutation.isPending;
 
-    const isLoading = accountQuery.isLoading;
+    const isLoading = transactionQuery.isLoading;
 
     const onSubmit = (values: FormValues) => {
         editMutation.mutate(values, {
@@ -46,8 +46,8 @@ export const EditAccountSheet = () => {
         }
     }
 
-    const defaultValues = accountQuery.data ? {
-        name: accountQuery.data.name
+    const defaultValues = transactionQuery.data ? {
+        name: transactionQuery.data.name
     } : {
         name: "" 
     }
@@ -59,10 +59,10 @@ export const EditAccountSheet = () => {
             <SheetContent className="space-y-4">
                 <SheetHeader>
                     <SheetTitle>
-                        Edit Account
+                        Edit Transaction
                     </SheetTitle>
                     <SheetDescription>
-                        Edit an existing account.
+                        Edit an existing transaction.
                     </SheetDescription>
                 </SheetHeader>
                 {isLoading ? (
@@ -70,7 +70,7 @@ export const EditAccountSheet = () => {
                         <Loader2 className="animate-spin text-muted-foreground" />
                     </div> 
                 ) : (
-                    <AccountForm id={id} onSubmit={onSubmit} disabled={isPending} 
+                    <TransactionForm id={id} onSubmit={onSubmit} disabled={isPending} 
                     defaultValue={defaultValues} onDelete={onDelete} />
                 )}
             </SheetContent>
