@@ -10,6 +10,8 @@ import { insertTransactionSchema } from "@/db/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select } from "@/components/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AmountInput } from "@/components/amount-input";
+import { convertAmountToMiliunits } from "@/lib/utils";
 
 const formSchema = z.object({
     date: z.coerce.date(),
@@ -46,8 +48,13 @@ export const TransactionForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        console.log({ values })
-        //onSubmit(values);
+        const amount = parseFloat(values.amount);
+        const amountInMiliunits = convertAmountToMiliunits(amount);
+
+        onSubmit({
+            ...values,
+            amount: amountInMiliunits
+        });
     }
 
     const handleDelete = () => {
@@ -102,6 +109,18 @@ export const TransactionForm = ({
                             </FormLabel>
                             <FormControl>
                                 <Input disabled={disabled} {...field} placeholder="e.g. Amazon, Uber, ..." />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+                <FormField control={form.control} name="amount"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Amount
+                            </FormLabel>
+                            <FormControl>
+                                <AmountInput {...field} disabled={disabled} placeholder="0.00" />
                             </FormControl>
                         </FormItem>
                     )}

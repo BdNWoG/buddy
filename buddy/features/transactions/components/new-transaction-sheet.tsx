@@ -58,8 +58,8 @@ export const NewTransactionSheet = () => {
                 ) : (
                     <TransactionForm onSubmit={onSubmit} disabled={isPending} categoryOptions={categoryOptions} 
                     onCreateCategory={onCreateCategory} onCreateAccount={onCreateAccount} 
-                    accountOptions={accountOptions} defaultValue={{ name: "" }}/>
-                )}
+                    accountOptions={accountOptions}/>
+                )} //check if deleted default
                 
             </SheetContent>
         </Sheet>
