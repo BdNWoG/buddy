@@ -8,6 +8,10 @@ import { Loader2 } from "lucide-react";
 import { useEditTransaction } from "../api/use-edit-transction";
 import { useDeleteTransaction } from "../api/use-delete-transaction";
 import { useConfirm } from "@/hooks/use-confirm";
+import { useGetCategories } from "@/features/categories/api/use-get-categories";
+import { useCreateCategory } from "@/features/categories/api/use-create-category";
+import { useGetAccounts } from "@/features/accounts/api/use-get-accounts";
+import { useCreateAccount } from "@/features/accounts/api/use-create-account";
 
 const formSchema = insertTransactionSchema.omit({ id: true });
 
@@ -21,6 +25,16 @@ export const EditTransactionSheet = () => {
     const transactionQuery = useGetTransaction(id);
     const editMutation = useEditTransaction(id);
     const deleteMutation = useDeleteTransaction(id);
+
+    const categoryQuery = useGetCategories();
+    const categoryMutation = useCreateCategory();
+    const onCreateCategory = (name: string) => categoryMutation.mutate({ name })
+    const categoryOptions = (categoryQuery.data ?? []).map(category => ({ value: category.id, label: category.name })); 
+
+    const accountQuery = useGetAccounts();
+    const accountMutation = useCreateAccount();
+    const onCreateAccount = (name: string) => accountMutation.mutate({ name })
+    const accountOptions = (accountQuery.data ?? []).map(account => ({ value: account.id, label: account.name })); 
 
     const isPending = editMutation.isPending || deleteMutation.isPending;
 
@@ -47,9 +61,19 @@ export const EditTransactionSheet = () => {
     }
 
     const defaultValues = transactionQuery.data ? {
-        name: transactionQuery.data.name
+        accountId: transactionQuery.data.accountId, 
+        categoryId: transactionQuery.data.categoryId, 
+        amount: transactionQuery.data.amount.toString(),
+        date: transactionQuery.data.date ? new Date(transactionQuery.data.date) : new Date(),
+        payee: transactionQuery.data.payee, 
+        notes: transactionQuery.data.notes,
     } : {
-        name: "" 
+        accountId: "", 
+        categoryId: "", 
+        amount: "",
+        date: "",
+        payee: "", 
+        notes: "",
     }
 
     return (

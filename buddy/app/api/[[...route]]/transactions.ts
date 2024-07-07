@@ -111,7 +111,7 @@ const app = new Hono()
 
         const data = await db.insert(transactions).values(values.map((value) => ({ id: createId(), ...value }))).returning(); 
 
-        return c.json({ data });
+        return c.json({ data }); 
     })
     .post('/bulk-delete', clerkMiddleware(), zValidator("json", z.object({ ids: z.array(z.string()) })), async (c) => {
         const auth = getAuth(c);
