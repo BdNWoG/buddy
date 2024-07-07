@@ -43,7 +43,8 @@ export const TransactionForm = ({
     });
 
     const handleSubmit = (values: FormValues) => {
-        onSubmit(values);
+        console.log({ values })
+        //onSubmit(values);
     }
 
     const handleDelete = () => {
@@ -53,11 +54,11 @@ export const TransactionForm = ({
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="pt-4 space-y-4">
-                <FormField control={form.control} name="name"
+                <FormField control={form.control} name="accountId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                Name
+                                Account
                             </FormLabel>
                             <FormControl>
                                 <Input {...field} disabled={disabled} placeholder="e.g. Cash, Bank, ..."/>
