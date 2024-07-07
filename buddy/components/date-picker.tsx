@@ -17,13 +17,18 @@ type Props = {
 export const DatePicker = ({
     value, onChange, disabled,
 }: Props) => {
-    <Popover>
-        <PopoverTrigger asChild>
-            <Button disabled={disabled} variant="outline" className={cn("w-full justify-start text-left font-normal",
-            !value && 'cursor-not-allowed opacity-50')}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {value ? format(value, "PPP") : <span>Pick a date</span>}
-            </Button>
-        </PopoverTrigger>
-    </Popover>
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button disabled={disabled} variant="outline" className={cn("w-full justify-start text-left font-normal",
+                !value && 'cursor-not-allowed opacity-50')}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {value ? format(value, "PPP") : <span>Pick a date</span>}
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+                <Calendar mode="single" selected={value} onSelect={onChange} disabled={disabled} initialFocus />
+            </PopoverContent>
+        </Popover>
+    )
 }
