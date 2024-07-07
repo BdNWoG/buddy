@@ -36,9 +36,9 @@ export const EditTransactionSheet = () => {
     const onCreateAccount = (name: string) => accountMutation.mutate({ name })
     const accountOptions = (accountQuery.data ?? []).map(account => ({ value: account.id, label: account.name })); 
 
-    const isPending = editMutation.isPending || deleteMutation.isPending;
+    const isPending = editMutation.isPending || deleteMutation.isPending || categoryMutation.isPending || accountMutation.isPending || transactionQuery.isLoading;
 
-    const isLoading = transactionQuery.isLoading;
+    const isLoading = transactionQuery.isLoading || categoryQuery.isLoading || accountQuery.isLoading;
 
     const onSubmit = (values: FormValues) => {
         editMutation.mutate(values, {
@@ -71,7 +71,7 @@ export const EditTransactionSheet = () => {
         accountId: "", 
         categoryId: "", 
         amount: "",
-        date: "",
+        date: new Date(),
         payee: "", 
         notes: "",
     }
@@ -94,8 +94,9 @@ export const EditTransactionSheet = () => {
                         <Loader2 className="animate-spin text-muted-foreground" />
                     </div> 
                 ) : (
-                    <TransactionForm id={id} onSubmit={onSubmit} disabled={isPending} 
-                    defaultValue={defaultValues} onDelete={onDelete} />
+                    <TransactionForm onSubmit={onSubmit} disabled={isPending} categoryOptions={categoryOptions} 
+                    onCreateCategory={onCreateCategory} onCreateAccount={onCreateAccount} id={id} onDelete={onDelete}
+                    accountOptions={accountOptions} defaultValues={defaultValues} />
                 )}
             </SheetContent>
         </Sheet>
