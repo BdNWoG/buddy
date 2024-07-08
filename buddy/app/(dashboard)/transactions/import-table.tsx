@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableHeadSelect } from "./table-head-select";
 
 type Props = {
     headers: string[]
     body: string[][]
     selectedColumns: Record<string, string | null>
-    onTableHeadSelectChange: (column: string, value: string | null) => void
+    onTableHeadSelectChange: (column: number, value: string | null) => void
 }
 
 export const ImportTable = ({
